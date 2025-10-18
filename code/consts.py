@@ -9,6 +9,9 @@ HUMAN_IN_LOOP = "human_in_loop"
 
 # Config Keys
 ADAPTIVE_SYSTEM = "adaptive_system"
+PROMPT_CONFIG = "prompt_config"
+LLM = "llm"
+AGENTS = "agents"
 
 
 # State Keys
@@ -29,12 +32,3 @@ ALLOWED_MODELS = [
     "openai/gpt-oss-120b"
 ]
 
-
-# MCP Tools
-RECON_TOOLS = "recon_tools"
-ANALYSIS_TOOLS = "analysis_tools"
-
-ALL_TOOLS = [
-    "port_scanner",
-    "web_search",
-]

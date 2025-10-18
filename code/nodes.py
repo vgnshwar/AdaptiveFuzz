@@ -7,8 +7,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from state import AdaptiveState
 from tools import call_tools
-from to_prompt import h_response
-from to_help import get_llm, load_yaml_file
+from utils import get_llm, h_response, load_yaml_file
 from paths import PROMPTS_CONFIG_PATH
 from schemata import (
     conversational_handler_schema, 
@@ -39,19 +38,7 @@ def make_ch_node(llm_model: str, prompt: str) -> Callable[[Dict[str, Any]], Dict
         # user_query = "Check the open ports in the target ip and find vulnerabilities"
         
         messages = [
-            SystemMessage(content=
-                "Imagine you are a part of reconnisance phase of penetration testing team." + "\n"
-                + "Your goal is to break down the user's high-level request into a series of smaller, manageable tasks." + "\n"
-                + "You should only create tasks that can be accomplished using the available tools." + "\n"
-                + "If the request is inappropriate, respond accordingly." + "\n"
-                + "Available tools are: " + "\n"
-                + "1. port_scanner: A tool to scan open ports on a target IP address." + "\n"
-                + "2. banner_grabber: A tool to grab service banners from open ports on a target IP address." + "\n"
-                + "3. web_search: A tool to perform web searches for gathering information." + "\n"
-                + "When creating tasks, ensure they are specific, actionable, and relevant to the user's request." + "\n"
-                + "Do not create tasks that cannot be accomplished with the available tools." + "\n"
-                + "If the request is inappropriate, respond with is_inappropriate as true and do not create any tasks." + "\n"            
-            ),
+            SystemMessage(content=prompt),
             HumanMessage(content= "\n"
                 "Here is the target IP Address: " + target_ip + "\n"
                 + "Here is the user query: " + user_query 
@@ -86,13 +73,7 @@ def make_re_node(llm_model: str, prompt: str, tools: List[BaseTool]) -> Callable
         tasks = state.get(TASKS, [])
         
         messages = [
-            SystemMessage(content=prompt + "\n"
-                + "Your goal is to execute the pending tasks using the available tools." + "\n"
-                + "Available tools are: " + "\n"
-                + "1. port_scanner: A tool to scan open ports on a target IP address." + "\n"
-                + "2. banner_grabber: A tool to grab service banners from open ports on a target IP address." + "\n"
-                + "Note: While sending tool call, include for which task you are sending the tool call in response. (task_id)" + "\n"
-            ),
+            SystemMessage(content=prompt),
             HumanMessage(content= "\n"
                 "Here are the pending tasks:" + json.dumps(tasks) + "\n"
                 + "Solve this by executing the necessary tools." + "\n"
@@ -126,16 +107,7 @@ def make_wa_node(llm_mode: str, prompt: str, tools: List[BaseTool]) -> Callable[
         tasks = state.get(TASKS, [])
         
         messages = [
-            SystemMessage(content=prompt + "\n"
-                + "Your goal is to execute the pending tasks using the available tools." + "\n"
-                + "Available tools are: " + "\n"
-                + "web_search: A tool to perform web searches for gathering information." + "\n"
-                + "Based on the tool outputs, i need to create some findings like" + "\n"
-                + "If one the task results contains port scan results, " + "\n"
-                + "then you can check what kind of scans we can do next on that open port using web_search tool" + "\n"
-                + "If you want to do web search regarding anything like this, please do so." + "\n"
-                + "web_search MCP tool is available"
-            ),
+            SystemMessage(content=prompt),
             HumanMessage(content=prompt+ "\n"
                 + "Now here are the tasks we already completed: " + json.dumps([task for task in tasks if task["status"] == "Completed"]) + "\n"
                 + "Here are the tasks we couldn't complete: " + json.dumps([task for task in tasks if task["status"] != "Completed"]) + "\n"
@@ -166,11 +138,7 @@ def make_ri_node(llm_model: str, prompt: str) -> Callable[[Dict[str, Any]], Dict
         tasks = state.get(TASKS, [])
         
         messages = [
-            SystemMessage(content=prompt
-                + "Your goal is to analyze the results of the executed tasks and extract concise, human-readable security findings." + "\n"
-                + "Focus on identifying potential vulnerabilities, misconfigurations, or any other security-relevant information." + "\n"
-                + "If no significant findings are present, return an empty list." + "\n"
-            ),
+            SystemMessage(content=prompt),
             HumanMessage(content= "\n"
                 + "Here are the executed tasks with their results:" + json.dumps(tasks) + "\n"
                 + "Based on the tool outputs, extract and list the most relevant security findings." + "\n"
@@ -195,13 +163,8 @@ def make_sa_node(llm_model: str, prompt: str) -> Callable[[Dict[str, Any]], Dict
         """Advise on strategic next steps (stub)."""
         
         messages = [
-            SystemMessage(content=prompt + "\n"
-                + "Your goal is to provide strategic next steps for the penetration test based on the current findings." + "\n"
-                + "Consider the overall security posture of the target and suggest actions that would be most impactful." + "\n"
-                + "Provide exactly three prioritized strategies." + "\n"
+            SystemMessage(content=prompt 
                 + "Next strategies should be in the same format as the tasks here: " + json.dumps(state.get(TASKS, [])) + "\n"
-                + "Inside this tasks, there will be task field, which will be the strategy you need to provide." + "\n"
-                + "No MCP tools are allowed to use in this step."
             ),
             HumanMessage(content= "\n"
                 + "Here are the current findings:" + json.dumps(state.get(FINDINGS, [])) + "\n"
@@ -222,6 +185,7 @@ def make_sa_node(llm_model: str, prompt: str) -> Callable[[Dict[str, Any]], Dict
 
 def make_hr_node() -> Callable[[Dict[str, Any]], Dict[str, Any]]:
     def human_in_loop_node(state: AdaptiveState) -> Dict[str, Any]:
+        """Engage human operator for decisions based on current state."""
         strategies = state.get(STRATEGIES, [])
         
         summary = h_response(
@@ -229,29 +193,17 @@ def make_hr_node() -> Callable[[Dict[str, Any]], Dict[str, Any]]:
             findings=state.get(FINDINGS, []),
             strategies=strategies,
         )
-
-        options = {str(i + 1): s for i, s in enumerate(strategies)}
-        options["stop"] = None
-
-        messages = {
-            "type": "choice",
-            "message": summary,
-            "options": [
-                {"label": v if v else "stop", "value": k}
-                for k, v in options.items()
-            ],
-        }
-
-        from_human = interrupt(messages)
-        if str(from_human) in options and options[str(from_human)]:
-            from_human = options[str(from_human)]
-        else:
-            from_human = None
+        
+        from_human = interrupt(summary)
+        while from_human is None or from_human.strip() == "":
+            from_human = interrupt("`Choices are numbered 1, 2, 3, etc. Type 'stop' to end the penetration test.`")
+            
+        to_loop = False if from_human.tolower() == "stop" else True
+        user_query = strategies[int(from_human) - 1] if to_loop else ""
 
         return {
-            TO_LOOP: bool(from_human),
-            USER_QUERY: list(from_human) if from_human else []
+            TO_LOOP: to_loop,
+            USER_QUERY: user_query
         }
 
     return human_in_loop_node
-

@@ -3,7 +3,7 @@ import os
 import yaml
 import asyncio
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, List
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langgraph.graph import StateGraph
@@ -11,9 +11,7 @@ from langchain_core.runnables.graph import MermaidDrawMethod
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from consts import ALLOWED_MODELS
-from paths import OUTPUT_DIR, AI_RESPONSE_PATH
-
-
+from paths import OUTPUT_DIR
 
 load_dotenv()
 
@@ -107,4 +105,37 @@ def save_graph_visualization(
             return png_path
         except Exception:
             return None
+
+
+def h_response(
+    findings: List[Dict[str, Any]],
+    completed_tasks: List[Dict[str, str]],
+    strategies: List[str],
+) -> str:
+    """Formats the current state of the fuzzer into a human-readable string."""
+    response = ["# AdaptiveFuzz Status", "---"]
+    
+    if completed_tasks:
+        response.append("## Tasks Status:")
+        for task in completed_tasks:
+            description = task.get("task", "No description")
+            status = task.get("status", "unknown")
+            response.append(f"- {description} ({status})")
+    response.append("---")
+    
+    if findings:
+        response.append("## Findings:")
+        for finding in findings:
+            response.append(f"- {finding}")
+    response.append("---")
+    
+    if strategies:
+        response.append("## Next Possible Strategies, choice is yours!!")
+        for i, strategy in enumerate(strategies):
+            response.append(f"{i + 1}. {strategy}")
+    response.append("---")
+    
+    response.append("\n`Choices are numbered 1, 2, 3, etc. Type 'stop' to end the penetration test.`")
+
+    return "\n".join(response)
 

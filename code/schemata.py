@@ -9,11 +9,6 @@ class Task(BaseModel):
     web_info: Optional[str] = Field(default=None, description="The web search results related to the task, if any.")
 
 
-class result(BaseModel):
-    command: str = Field(description="The command that was executed.")
-    output: str = Field(description="The output of the executed command.")
-
-
 class conversational_handler_schema(BaseModel):
     tasks: List[Task] = Field(description="A list of small recon tasks.")
     is_inappropriate: bool = Field(description="A boolean indicating if the content is inappropriate.")

@@ -12,7 +12,7 @@ from langgraph.prebuilt import ToolNode
 from state import AdaptiveState
 from paths import PROMPTS_CONFIG_PATH
 from tools import get_mcp_tools, filter_tools
-from to_help import wait_yaml_file, save_graph_visualization
+from utils import wait_yaml_file, save_graph_visualization
 from routes import route_from_human, route_from_conversational_handler
 from nodes import (
     make_ch_node,
@@ -30,6 +30,9 @@ from consts import (
     STRATEGY_ADVISOR,
     HUMAN_IN_LOOP,
     ADAPTIVE_SYSTEM,
+    PROMPT_CONFIG,
+    AGENTS,
+    LLM,
 )
 
 
@@ -43,30 +46,30 @@ async def build_adaptive_graph() -> StateGraph:
     config = adaptive_config[ADAPTIVE_SYSTEM]
 
     graph.add_node(CONVERSATIONAL_HANDLER, make_ch_node(
-        llm_model=config["agents"][CONVERSATIONAL_HANDLER]["llm"],
-        prompt=config["agents"][CONVERSATIONAL_HANDLER]["prompt_config"],
+        llm_model=config[AGENTS][CONVERSATIONAL_HANDLER][LLM],
+        prompt=config[AGENTS][CONVERSATIONAL_HANDLER][PROMPT_CONFIG],
     ))
     
     graph.add_node(RECON_EXECUTOR, make_re_node(
-        llm_model=config["agents"][RECON_EXECUTOR]["llm"], 
-        prompt=config["agents"][RECON_EXECUTOR]["prompt_config"],
+        llm_model=config[AGENTS][RECON_EXECUTOR][LLM], 
+        prompt=config[AGENTS][RECON_EXECUTOR][PROMPT_CONFIG],
         tools=filter_tools(mcp_tools, 'recon')
     ))
     
     graph.add_node(WEB_ANALYZER, make_wa_node(
-        llm_mode=config["agents"][WEB_ANALYZER]["llm"],
-        prompt=config["agents"][WEB_ANALYZER]["prompt_config"],
+        llm_mode=config[AGENTS][WEB_ANALYZER][LLM],
+        prompt=config[AGENTS][WEB_ANALYZER][PROMPT_CONFIG],
         tools=filter_tools(mcp_tools, 'web')
     ))
     
     graph.add_node(RESULT_INTERPRETER, make_ri_node(
-        llm_model=config["agents"][RESULT_INTERPRETER]["llm"], 
-        prompt=config["agents"][RESULT_INTERPRETER]["prompt_config"]
+        llm_model=config[AGENTS][RESULT_INTERPRETER][LLM], 
+        prompt=config[AGENTS][RESULT_INTERPRETER][PROMPT_CONFIG]
     ))
     
     graph.add_node(STRATEGY_ADVISOR, make_sa_node(
-        llm_model=config["agents"][STRATEGY_ADVISOR]["llm"],
-        prompt=config["agents"][STRATEGY_ADVISOR]["prompt_config"]
+        llm_model=config[AGENTS][STRATEGY_ADVISOR][LLM],
+        prompt=config[AGENTS][STRATEGY_ADVISOR][PROMPT_CONFIG]
     ))
     
     graph.add_node(HUMAN_IN_LOOP, make_hr_node())
