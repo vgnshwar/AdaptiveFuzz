@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langgraph.graph import StateGraph
 from langchain_core.runnables.graph import MermaidDrawMethod
-from langchain_google_genai import ChatGoogleGenerativeAI
+# from langchain_google_genai import ChatGoogleGenerativeAI
 
 from consts import ALLOWED_MODELS
 from paths import OUTPUT_DIR

@@ -9,7 +9,9 @@ AdaptiveFuzz is an LLM-powered multi-agent framework designed to automate the re
 
 The system intelligently plans enumeration tasks, executes them, analyzes the results, and proposes new strategies based on its findings, all while keeping a human operator in the loop for final approval.
 
-## Expected Outcome
+---
+
+#### Expected Outcome
 
 1. **Information Gathering**: Collect as much information as possible about a target's systems, networks, and infrastructure. 
 
@@ -17,7 +19,36 @@ The system intelligently plans enumeration tasks, executes them, analyzes the re
 
 3. **Attack Strategy Planning**: The gathered intelligence helps attackers tailor their approach and increases the chances of a successful breach.
 
-## Core Concepts
+---
+
+#### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/vksundararajan/AdaptiveFuzz.git
+   cd AdaptiveFuzz
+   ```
+
+2. Create and activate a virtual environment:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
+
+3. Configure & Install Dependencies
+	```bash
+	cp .env.example .env
+	pip install -r requirements.txt
+	```
+
+4. Run the application:
+   ```bash
+   langgraph dev
+   ```
+
+---
+
+#### Core Concepts
 
 This project is built on two key technologies: LangGraph and the Model Context Protocol (MCP).
 
@@ -25,7 +56,9 @@ This project is built on two key technologies: LangGraph and the Model Context P
 
 - **Model Context Protocol (MCP)**: MCP is the communication bridge that allows the LLM agents to interact with actual security tools. The project uses `FastMCP` to serve Python-based reconnaissance tools, which the agents can call to scan targets and gather information.
 
-## Architecture & Workflow
+---
+
+#### Architecture
 
 The system operates as a team of specialized agents, each handling one part of the reconnaissance loop.
 
@@ -58,7 +91,7 @@ graph TD;
 	classDef last fill:
 ```
 
-### The Workflow Loop
+#### Workflow Loop
 
 1. **Conversational Handler**: The process begins here. The user provides a target IP and a high-level goal (e.g., "Scan this target for web vulnerabilities"). This agent decomposes that goal into a list of specific, executable tasks (e.g., port scanning, banner grabbing).
 
@@ -74,37 +107,16 @@ graph TD;
 
 If the user chooses a strategy, the graph routes back to the Recon Executor, which runs the new tasks. This iterative cycle of Execute -> Analyze -> Strategize -> Get Human Approval is what makes the system "adaptive."
 
-## MCP Tools
+---
+
+#### MCP Tools
 
 The framework is pre-configured with tools served via FastMCP:
 - `port_scanner`: Scans a target IP for a list of open ports.
 - `banner_grabber`: Connects to open ports to grab service banners.
 - `web_search`: Performs a Google web search to gather external intelligence.
 
-## Installation
+---
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/vksundararajan/AdaptiveFuzz.git
-   cd AdaptiveFuzz
-   ```
-
-2. **Create and activate a virtual environment:**
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
-
-3. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Run the application:**
-   ```bash
-   langgraph dev
-   ```
-
-
-## License
+#### License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
