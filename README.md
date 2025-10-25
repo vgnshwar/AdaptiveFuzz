@@ -1,4 +1,4 @@
-# [AdaptiveFuzz](https://github.com/vksundararajan/AdaptiveFuzz)
+# AdaptiveFuzz
 
 [![Status: Ongoing](https://img.shields.io/badge/status-Ongoing-gold?style=flat-square)](https://github.com/vksundararajan/AdaptiveFuzz/issues)
 
@@ -11,7 +11,7 @@ The system intelligently plans enumeration tasks, executes them, analyzes the re
 
 ---
 
-#### Expected Outcome
+### Expected Outcome
 
 1. **Information Gathering**: Collect as much information as possible about a target's systems, networks, and infrastructure. 
 
@@ -21,7 +21,7 @@ The system intelligently plans enumeration tasks, executes them, analyzes the re
 
 ---
 
-#### Installation
+### Installation
 
 1. Clone the repository:
    ```bash
@@ -48,7 +48,7 @@ The system intelligently plans enumeration tasks, executes them, analyzes the re
 
 ---
 
-#### Core Concepts
+### Core Concepts
 
 This project is built on two key technologies: LangGraph and the Model Context Protocol (MCP).
 
@@ -58,7 +58,7 @@ This project is built on two key technologies: LangGraph and the Model Context P
 
 ---
 
-#### Architecture
+### Architecture
 
 The system operates as a team of specialized agents, each handling one part of the reconnaissance loop.
 
@@ -109,7 +109,7 @@ If the user chooses a strategy, the graph routes back to the Recon Executor, whi
 
 ---
 
-#### MCP Tools
+### MCP Tools
 
 The framework is pre-configured with tools served via FastMCP:
 - `port_scanner`: Scans a target IP for a list of open ports.
@@ -118,5 +118,5 @@ The framework is pre-configured with tools served via FastMCP:
 
 ---
 
-#### License
+### License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
