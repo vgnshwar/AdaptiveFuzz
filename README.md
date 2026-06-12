@@ -1,6 +1,6 @@
 # AdaptiveFuzz
 
-[![Status: Ongoing](https://img.shields.io/badge/status-Ongoing-gold?style=flat-square)](https://github.com/vksundararajan/AdaptiveFuzz/issues)
+[![Status: Ongoing](https://img.shields.io/badge/status-Ongoing-gold?style=flat-square)](https://github.com/vgnshwar/AdaptiveFuzz/issues)
 
 🔗 [Watch a demo of AdaptiveFuzz in action](https://drive.google.com/file/d/11ldkNL88Gsc22rEQPEMN-XeqM0S3iD1S/view?usp=sharing)
 
@@ -25,7 +25,7 @@ The system intelligently plans enumeration tasks, executes them, analyzes the re
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/vksundararajan/AdaptiveFuzz.git
+   git clone https://github.com/vgnshwar/AdaptiveFuzz.git
    cd AdaptiveFuzz
    ```
 
