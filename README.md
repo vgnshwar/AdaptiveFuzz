@@ -1,6 +1,13 @@
 # AdaptiveFuzz
 
-[![Status: Ongoing](https://img.shields.io/badge/status-Ongoing-gold?style=flat-square)](https://github.com/vgnshwar/AdaptiveFuzz/issues)
+[![Status: Migrating](https://img.shields.io/badge/status-Migrating-blueviolet?style=flat-square)](https://github.com/vgnshwar/AdaptiveFuzz/issues)
+
+> [!WARNING]
+> **Notice: Architecture Update**
+>
+> The code in this `main` branch is the original Python proof-of-concept. I am completely rebuilding the project to a new, more mature agent architecture (Interpreter, Core Engine, Sandbox, RAG, etc.).
+> 
+> All the active work is happening in the [`migrate/design-flow`](https://github.com/vgnshwar/AdaptiveFuzz/tree/migrate/design-flow) branch right now, and it will be merged here soon. If you want to see the new setup and architecture flow, please check that branch.
 
 🔗 [Watch a demo of AdaptiveFuzz in action](https://drive.google.com/file/d/11ldkNL88Gsc22rEQPEMN-XeqM0S3iD1S/view?usp=sharing)
 
